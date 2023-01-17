@@ -11,13 +11,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class MowerControllerImpl {
 
-    private static Logger logger = Logger.getLogger("com.mowltnow.mower.MowerControllerImpl");
     public Mower handelMowerInstructions(Mower mower) {
         mower.getListOfInstructions().forEach(instruction -> instruction.processInstruction(mower));
         return mower;
@@ -37,16 +33,16 @@ public class MowerControllerImpl {
 
             Area area = initializeArea(reader.readLine());
 
-            String mowerInitialPosition, mowerInstructions;
+            String mowerInitialPosition;
+            String mowerInstructions;
 
             while ((mowerInitialPosition = reader.readLine()) != null
                     && (mowerInstructions = reader.readLine()) != null) {
                 Mower createdMower = createMowerFromLineData(mowerInitialPosition, mowerInstructions, area);
                 result.add(createdMower);
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Problem occured while handling mower data file" + e.getMessage());
-            throw new RuntimeException("Problem occured while handling mower data file" + e.getMessage());
+        } catch (Exception exception) {
+            throw new MowerFileProcessingException("Error while handling input data file", exception);
         }
         return result;
     }
@@ -58,21 +54,19 @@ public class MowerControllerImpl {
         int abscissaMower = Integer.parseInt(initialMowerPositionAsTokens.nextToken());
         int ordinateMower = Integer.parseInt(initialMowerPositionAsTokens.nextToken());
 
-        if (abscissaMower < 0 || ordinateMower<0) {
-            throw new RuntimeException("Invalide negative positions values");
+        if (abscissaMower < 0 || ordinateMower < 0) {
+            throw new IllegalArgumentException(String.format("Invalid negative positions values : (%d , %d)", abscissaMower, ordinateMower));
         }
 
         String mowerDirection = initialMowerPositionAsTokens.nextToken();
         List<Instruction> instructionsList = mapInstructionCharacterToInstructionClass(mowerInstructions);
 
-        Mower mower = new Mower(abscissaMower, ordinateMower, Direction.valueOf(mowerDirection), instructionsList ,
+        return new Mower(abscissaMower, ordinateMower, Direction.valueOf(mowerDirection), instructionsList,
                 area);
-
-        return mower;
     }
 
     private List<Instruction> mapInstructionCharacterToInstructionClass(String mowerInstructions) {
-        List<Instruction> instructionsList = mowerInstructions.chars().mapToObj(c -> (char) c).map(instruction -> {
+        return mowerInstructions.chars().mapToObj(c -> (char) c).map(instruction -> {
             switch (instruction) {
                 case 'D':
                     return new TurnRightInstruction();
@@ -84,28 +78,23 @@ public class MowerControllerImpl {
                     return new MoveForwardInstruction();
 
                 default:
-                    throw new RuntimeException("Invalide Instruction should be A G or D");
+                    throw new IllegalArgumentException(String.format(
+                            "Invalide Instruction should be A G or D, your input was : %s", instruction));
             }
-        }).collect(Collectors.toList());
-        return instructionsList;
+        }).toList();
     }
 
     private Area initializeArea(String areaDataLine) {
         StringTokenizer stringTokenizer = new StringTokenizer(areaDataLine, " ");
         if (stringTokenizer.countTokens() != 2) {
-            throw new RuntimeException("Error initializing Area Data, should be 2 integers");
+            throw new IllegalArgumentException(String.format("Invalid arguments count, should be 2, your input was %d", stringTokenizer.countTokens()));
         } else {
-            try {
-                int width = Integer.parseInt(stringTokenizer.nextToken());
-                int length = Integer.parseInt(stringTokenizer.nextToken());
-                if (width<0 || length <0) {
-                    throw new RuntimeException("Area Negative Values");
-                }
-                return new Area(width,length);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Invalid area data : parsing integer fails" + e.getMessage());
-                throw new RuntimeException("Invalid area data : parsing integer fails\"+e.getMessage()");
+            int width = Integer.parseInt(stringTokenizer.nextToken());
+            int length = Integer.parseInt(stringTokenizer.nextToken());
+            if (width < 0 || length < 0) {
+                throw new IllegalArgumentException("Area Negative Values");
             }
+            return new Area(width, length);
         }
     }
 }

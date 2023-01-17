@@ -11,7 +11,7 @@ public enum Direction {
     W(3);
 
     private int value;
-    private static final Map<Integer,Direction> directionByValueMap = new HashMap<Integer, Direction>();
+    private static final Map<Integer,Direction> directionByValueMap = new HashMap<>();
 
     static {
         for (Direction item : values()) {

@@ -3,6 +3,7 @@ package com.mowltnow.mower;
 import com.mowltnow.instruction.Instruction;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Mower {
 
@@ -68,5 +69,10 @@ public class Mower {
                 && ordinate == mower.ordinate
                 && direction == mower.direction
                 && area.equals(mower.area);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(abscissa, ordinate, direction, listOfInstructions, area);
     }
 }

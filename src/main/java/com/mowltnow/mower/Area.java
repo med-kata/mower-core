@@ -1,6 +1,8 @@
 package com.mowltnow.mower;
 
 
+import java.util.Objects;
+
 public class Area {
 
     private int width;
@@ -33,4 +35,8 @@ public class Area {
         return width == area.width && length == area.length;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(width, length);
+    }
 }
