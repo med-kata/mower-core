@@ -17,10 +17,11 @@ public class MowerInstructionTest {
 
     @Test
     public void instructionTurnRightFromPosition_0_0_North() {
-        Mower mower = new Mower(0, 0, Direction.NORTH, TestHelper.createInstructionsFromCharaterList(Arrays.asList('D')),
+        Mower mower = new Mower(0, 0, Direction.N, TestHelper.createInstructionsFromCharaterList(Arrays.asList('D')),
                 new Area(5, 5));
         Mower result = mowerService.handelMowerInstructions(mower);
-        assertEquals(new Mower(0, 0, Direction.EAST, TestHelper.createInstructionsFromCharaterList(Arrays.asList('D')), new Area(5, 5)), result);
+        assertEquals(new Mower(0, 0, Direction.E,
+                TestHelper.createInstructionsFromCharaterList(Arrays.asList('D')), new Area(5, 5)), result);
     }
 
 }
