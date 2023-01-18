@@ -7,6 +7,6 @@ public class TurnRightInstruction implements Instruction {
 
     @Override
     public void processInstruction(Mower mower) {
-        mower.setDirection(Direction.getDirectionByValue((mower.getDirection().getValue() + 1) % 4));
+        mower.setDirection(Direction.getDirectionByIntValue((mower.getDirection().getIntValue() + 1) % 4));
     }
 }

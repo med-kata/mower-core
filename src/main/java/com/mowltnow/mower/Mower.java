@@ -10,8 +10,8 @@ public class Mower {
     private int abscissa;
     private int ordinate;
     private Direction direction;
-    private List<Instruction> listOfInstructions;
-    private Area area;
+    private final List<Instruction> listOfInstructions;
+    private final Area area;
 
     public Mower(int abscissa, int ordinate, Direction direction, List<Instruction> listOfInstructions, Area area) {
         this.abscissa = abscissa;
@@ -49,16 +49,8 @@ public class Mower {
         return listOfInstructions;
     }
 
-    public void setListOfInstructions(List<Instruction> listOfInstructions) {
-        this.listOfInstructions = listOfInstructions;
-    }
-
     public Area getArea() {
         return area;
-    }
-
-    public void setArea(Area area) {
-        this.area = area;
     }
 
     @Override

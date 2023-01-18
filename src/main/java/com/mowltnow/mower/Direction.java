@@ -5,30 +5,39 @@ import java.util.Map;
 
 public enum Direction {
 
-    N(0),
-    E(1),
-    S(2),
-    W(3);
+    NORTH(0, 'N'),
+    EAST(1, 'E'),
+    SOUTH(2, 'S'),
+    WEST(3, 'W');
 
-    private int value;
-    private static final Map<Integer,Direction> directionByValueMap = new HashMap<>();
+    private final int intValue;
+    private final Character letterValue;
+    private static final Map<Integer,Direction> directionByIntValueMap = new HashMap<>();
+
+    private static final Map<Character,Direction> directionByLetterValueMap = new HashMap<>();
 
     static {
         for (Direction item : values()) {
-            directionByValueMap.put(item.value, item);
+            directionByIntValueMap.put(item.intValue, item);
+            directionByLetterValueMap.put(item.letterValue, item);
         }
     }
 
 
-    Direction(int value) {
-        this.value=value;
+    Direction(int value, Character letterValue)
+    {
+        this.intValue =value;
+        this.letterValue= letterValue;
     }
 
-    public static Direction getDirectionByValue(int passedValue) {
-        return directionByValueMap.get(passedValue);
+    public static Direction getDirectionByIntValue(int passedValue) {
+        return directionByIntValueMap.get(passedValue);
     }
 
-    public int getValue() {
-        return this.value;
+    public static Direction getDirectionByLetterValue(Character passedValue) {
+        return directionByLetterValueMap.get(passedValue);
+    }
+    public int getIntValue() {
+        return this.intValue;
     }
 }

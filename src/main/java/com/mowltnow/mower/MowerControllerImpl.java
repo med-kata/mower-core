@@ -20,13 +20,13 @@ public class MowerControllerImpl {
     }
 
 
-    public List<Mower> handelMowersInstructionsFromFile(Path dataFilePath) {
+    public List<Mower> handelMowersInstructionsFromFile(Path dataFilePath) throws MowerFileProcessingException {
         List<Mower> mowerList = initializeData(dataFilePath);
         mowerList.forEach(this::handelMowerInstructions);
         return mowerList;
     }
 
-    public List<Mower> initializeData(Path dataFilePath) {
+    public List<Mower> initializeData(Path dataFilePath) throws MowerFileProcessingException {
         List<Mower> result = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(dataFilePath.toFile()))) {
@@ -58,30 +58,21 @@ public class MowerControllerImpl {
             throw new IllegalArgumentException(String.format("Invalid negative positions values : (%d , %d)", abscissaMower, ordinateMower));
         }
 
-        String mowerDirection = initialMowerPositionAsTokens.nextToken();
-        List<Instruction> instructionsList = mapInstructionCharacterToInstructionClass(mowerInstructions);
+        Character mowerDirection = initialMowerPositionAsTokens.nextToken().charAt(0);
+        List<Instruction> instructionsList = mapInstructionCharacterToInstructionClass(mowerInstructions.chars().mapToObj(c -> (char) c).toList());
 
-        return new Mower(abscissaMower, ordinateMower, Direction.valueOf(mowerDirection), instructionsList,
+        return new Mower(abscissaMower, ordinateMower, Direction.getDirectionByLetterValue(mowerDirection), instructionsList,
                 area);
     }
 
-    private List<Instruction> mapInstructionCharacterToInstructionClass(String mowerInstructions) {
-        return mowerInstructions.chars().mapToObj(c -> (char) c).map(instruction -> {
-            switch (instruction) {
-                case 'D':
-                    return new TurnRightInstruction();
-
-                case 'G':
-                    return new TurnLeftInstruction();
-
-                case 'A':
-                    return new MoveForwardInstruction();
-
-                default:
-                    throw new IllegalArgumentException(String.format(
-                            "Invalide Instruction should be A G or D, your input was : %s", instruction));
-            }
-        }).toList();
+    public List<Instruction> mapInstructionCharacterToInstructionClass(List<Character> mowerInstructions) {
+        return mowerInstructions.stream().map(instructionChar -> switch (instructionChar) {
+                    case 'D' -> new TurnRightInstruction();
+                    case 'G' -> new TurnLeftInstruction();
+                    case 'A' -> new MoveForwardInstruction();
+                    default -> throw new IllegalArgumentException("Invalid Instruction should be A G or D");
+                }
+        ).toList();
     }
 
     private Area initializeArea(String areaDataLine) {
